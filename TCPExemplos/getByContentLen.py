@@ -2,6 +2,7 @@ import socket
 
 '''
 Esse programa le os dados de um servidor HTTP que responde
+Esse programa le os dados de um servidor HTTP que responde
 o tamanho dos dados baseado em Content-Length ...
 
 Atividade:
