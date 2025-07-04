@@ -1,4 +1,4 @@
-import socket, os, sys
+import socket, os
 
 SERVIDOR = ""
 PORTA    = 2121
@@ -30,10 +30,24 @@ def respondeComandoDir():
     listaArquivos = os.listdir(PASTAARQ)
     listaArquivos = "\r\n".join(listaArquivos).encode()
     sockCon.send(adicionaTamanho(listaArquivos))
-        
-def processaComandos(comando):
+
+def respondeComandoDownload(nomeArquivo):
+    nomeArquivo = PASTAARQ+"/"+nomeArquivo
+    tamArquivo = os.path.getsize(nomeArquivo)
+    sockCon.send (tamArquivo.to_bytes(4, 'big'))
+    
+    fd = open (nomeArquivo, "rb")
+    dados = fd.read(8192)
+    while (dados != b''):
+        sockCon.send(dados)
+        dados = fd.read(8192)
+    fd.close()
+    
+def processaComando(comando):
     if comando[:3] == b'DIR':
         respondeComandoDir()
+    elif comando[:3] == b'DOW':
+        respondeComandoDownload(comando[4:].decode())
     else:
         respondeComandoNulo()
     return
@@ -41,12 +55,14 @@ def processaComandos(comando):
 def main():
     global sockCon
     
-    escutaPorta()    
+    escutaPorta()
+    print ("Escutando conexões ....")
     while True:
-        print ("Aceitando conexões", file=sys.stderr)
         sockCon, cliente = sock.accept()
-        print ("Conexão recebida de {cliente}", file=sys.stderr)
-        comando = leComando()
-        processaComandos(comando)
+        print ("Conexão recebida de", cliente)
+        while True:
+            comando = leComando()
+            processaComando(comando)
+        sockCon.close()
 
 main()
