@@ -6,8 +6,8 @@ SERVER = 'localhost'
 def trataUsuario():
     nMsg = 1
     while True:
-        msg = input (f"Digite msg ({nMsg}): ")
-        sockClient.send((f"msg {nMsg}"+msg).encode())
+        msg = input (f"Digite msg ({nMsg}): +")
+        sockClient.send((f"msg {nMsg} -> "+msg).encode())
         nMsg += 1
 
 def trataServidor():
